@@ -1,0 +1,64 @@
+module.exports = {/**
+ * Vente partagée :
+ * - 50 % de la commission pour chaque commercial ;
+ * - 0 GP pour chacun ;
+ * - aucun compte client pour la promotion.
+ */
+function attributeSharedSale({
+  originCommercialId,
+  concludingCommercialId,
+  amountCommission,
+}) {
+  if (
+    typeof originCommercialId !== "string" ||
+    originCommercialId.trim() === ""
+  ) {
+    throw new Error(
+      "Le commercial d'origine est obligatoire."
+    );
+  }
+
+  if (
+    typeof concludingCommercialId !== "string" ||
+    concludingCommercialId.trim() === ""
+  ) {
+    throw new Error(
+      "Le commercial concluant est obligatoire."
+    );
+  }
+
+  if (originCommercialId === concludingCommercialId) {
+    throw new Error(
+      "Une vente partagée doit concerner deux commerciaux différents."
+    );
+  }
+
+  if (
+    typeof amountCommission !== "number" ||
+    !Number.isFinite(amountCommission) ||
+    amountCommission < 0
+  ) {
+    throw new Error(
+      "Le montant de commission doit être un nombre supérieur ou égal à 0."
+    );
+  }
+
+  const commissionShare = Number(
+    (amountCommission / 2).toFixed(2)
+  );
+
+  return {
+    originCommercialId,
+    concludingCommercialId,
+    commissionShare: 50,
+    originCommissionAmount: commissionShare,
+    concludingCommissionAmount: commissionShare,
+    originGpAttributed: 0,
+    concludingGpAttributed: 0,
+    originCountsForPromotion: false,
+    concludingCountsForPromotion: false,
+  };
+}module.exports = {
+  attributeNormalSale,
+  attributeSharedSale,
+};
