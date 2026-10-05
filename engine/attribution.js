@@ -3,6 +3,7 @@
  * Sale Attribution Engine
  *
  * Phase 3.1 — Vente normale
+<<<<<<< HEAD
  * Phase 3.2 — Vente partagée
  */
 
@@ -10,6 +11,18 @@
 // PHASE 3.1 — VENTE NORMALE
 // ============================================================
 
+=======
+ *
+ * Règle :
+ * Une vente normale est attribuée à un seul commercial.
+ *
+ * Le commercial d'origine :
+ * - reçoit 100 % de la commission ;
+ * - reçoit 100 % des GP ;
+ * - compte le client pour sa promotion.
+ */
+
+>>>>>>> origin/main
 function attributeNormalSale({
   originCommercialId,
   amountCommission,
@@ -54,6 +67,7 @@ function attributeNormalSale({
   };
 }
 
+<<<<<<< HEAD
 // ============================================================
 // PHASE 3.2 — VENTE PARTAGÉE
 // ============================================================
@@ -236,3 +250,8 @@ function attributeAdditionalServiceSale({
     justification: justification.trim(),
   };
 }
+=======
+module.exports = {
+  attributeNormalSale,
+};
+>>>>>>> origin/main
