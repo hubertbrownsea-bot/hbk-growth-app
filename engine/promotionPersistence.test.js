@@ -5,7 +5,7 @@ const {
 } = require("./promotionPersistence");
 
 // ============================================================
-// Demande validée → enregistrement prêt pour persistance
+// Demande validée → enregistrement compatible avec Supabase
 // ============================================================
 
 const record = preparePromotionRecord({
@@ -19,7 +19,8 @@ const record = preparePromotionRecord({
     motif: null,
     validateurId: "coordination-001",
   },
-  createdAt: "2026-10-07T08:00:00.000Z",
+  requestedAt: "2026-10-07T08:00:00.000Z",
+  validatedAt: "2026-10-07T09:00:00.000Z",
 });
 
 assert.deepStrictEqual(record, {
@@ -30,9 +31,37 @@ assert.deepStrictEqual(record, {
   gp_valides: 42,
   statut: "VALIDEE",
   motif: null,
-  validateur: "coordination-001",
-  date_creation: "2026-10-07T08:00:00.000Z",
+  valide_par_commercial_id: "coordination-001",
+  date_demande: "2026-10-07T08:00:00.000Z",
+  date_validation: "2026-10-07T09:00:00.000Z",
 });
+
+// ============================================================
+// Les dates sont optionnelles : Supabase peut utiliser ses
+// valeurs par défaut pour date_demande.
+// ============================================================
+
+const recordWithoutDates = preparePromotionRecord({
+  promotionRequest: {
+    commercialId: "commercial-002",
+    ancienGrade: 2,
+    nouveauGrade: 3,
+    clientsValides: 12,
+    gpValides: 80,
+    statut: "VALIDEE",
+    validateurId: "coordination-001",
+  },
+});
+
+assert.strictEqual(
+  recordWithoutDates.date_demande,
+  undefined
+);
+
+assert.strictEqual(
+  recordWithoutDates.date_validation,
+  undefined
+);
 
 // ============================================================
 // Une demande EN_ATTENTE ne peut pas être persistée comme
@@ -43,7 +72,7 @@ assert.throws(
   () =>
     preparePromotionRecord({
       promotionRequest: {
-        commercialId: "commercial-002",
+        commercialId: "commercial-003",
         ancienGrade: 1,
         nouveauGrade: 2,
         clientsValides: 5,
@@ -63,7 +92,7 @@ assert.throws(
   () =>
     preparePromotionRecord({
       promotionRequest: {
-        commercialId: "commercial-003",
+        commercialId: "commercial-004",
         ancienGrade: 1,
         nouveauGrade: 2,
         clientsValides: 5,
@@ -82,12 +111,13 @@ assert.throws(
   () =>
     preparePromotionRecord({
       promotionRequest: {
-        commercialId: "commercial-004",
+        commercialId: "commercial-005",
         ancienGrade: 1,
         nouveauGrade: 3,
         clientsValides: 10,
         gpValides: 75,
         statut: "VALIDEE",
+        validateurId: "coordination-001",
       },
     }),
   /grade immédiatement supérieur/
@@ -107,31 +137,31 @@ assert.throws(
         clientsValides: 5,
         gpValides: 30,
         statut: "VALIDEE",
+        validateurId: "coordination-001",
       },
     }),
   /identifiant du commercial/
 );
 
 // ============================================================
-// Date optionnelle
+// Identifiant du validateur obligatoire
 // ============================================================
 
-const recordWithoutDate = preparePromotionRecord({
-  promotionRequest: {
-    commercialId: "commercial-005",
-    ancienGrade: 2,
-    nouveauGrade: 3,
-    clientsValides: 10,
-    gpValides: 75,
-    statut: "VALIDEE",
-  },
-});
-
-assert.strictEqual(
-  recordWithoutDate.date_creation,
-  undefined
+assert.throws(
+  () =>
+    preparePromotionRecord({
+      promotionRequest: {
+        commercialId: "commercial-006",
+        ancienGrade: 1,
+        nouveauGrade: 2,
+        clientsValides: 5,
+        gpValides: 30,
+        statut: "VALIDEE",
+      },
+    }),
+  /identifiant du validateur/
 );
 
 console.log(
-  "Tous les tests du Promotion Persistence Engine 5.7 sont passés."
+  "Tous les tests du Promotion Persistence Engine 5.8.1 sont passés."
 );

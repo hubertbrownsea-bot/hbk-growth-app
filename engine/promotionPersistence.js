@@ -2,16 +2,17 @@
  * HBK Growth Engine
  * Promotion Persistence
  *
- * Phase 5.7 — Préparation de la persistance
+ * Phase 5.8.1 — Alignement avec le schéma Supabase
  *
  * Ce module ne communique pas encore avec Supabase.
- * Il transforme une demande de promotion validée par le moteur
- * en objet compatible avec la couche de persistance.
+ * Il transforme une promotion validée par le moteur
+ * en objet compatible avec la table public.promotions.
  */
 
 function preparePromotionRecord({
   promotionRequest,
-  createdAt,
+  requestedAt,
+  validatedAt,
 }) {
   if (
     !promotionRequest ||
@@ -74,6 +75,15 @@ function preparePromotionRecord({
     );
   }
 
+  if (
+    typeof promotionRequest.validateurId !== "string" ||
+    promotionRequest.validateurId.trim() === ""
+  ) {
+    throw new Error(
+      "L'identifiant du validateur est obligatoire."
+    );
+  }
+
   const record = {
     commercial_id: promotionRequest.commercialId.trim(),
     ancien_grade: promotionRequest.ancienGrade,
@@ -82,22 +92,35 @@ function preparePromotionRecord({
     gp_valides: Number(
       promotionRequest.gpValides.toFixed(2)
     ),
-    statut: promotionRequest.statut,
+    statut: "VALIDEE",
     motif: promotionRequest.motif || null,
-    validateur: promotionRequest.validateurId || null,
+    valide_par_commercial_id: promotionRequest.validateurId.trim(),
   };
 
-  if (createdAt !== undefined) {
+  if (requestedAt !== undefined) {
     if (
-      typeof createdAt !== "string" ||
-      createdAt.trim() === ""
+      typeof requestedAt !== "string" ||
+      requestedAt.trim() === ""
     ) {
       throw new Error(
-        "La date de création est invalide."
+        "La date de demande est invalide."
       );
     }
 
-    record.date_creation = createdAt;
+    record.date_demande = requestedAt;
+  }
+
+  if (validatedAt !== undefined) {
+    if (
+      typeof validatedAt !== "string" ||
+      validatedAt.trim() === ""
+    ) {
+      throw new Error(
+        "La date de validation est invalide."
+      );
+    }
+
+    record.date_validation = validatedAt;
   }
 
   return record;
