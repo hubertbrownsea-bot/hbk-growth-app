@@ -3,26 +3,20 @@
  * Sale Attribution Engine
  *
  * Phase 3.1 — Vente normale
-<<<<<<< HEAD
  * Phase 3.2 — Vente partagée
+ * Phase 3.3 — Service supplémentaire vendu par un autre commercial
  */
 
 // ============================================================
 // PHASE 3.1 — VENTE NORMALE
 // ============================================================
 
-=======
- *
- * Règle :
- * Une vente normale est attribuée à un seul commercial.
- *
- * Le commercial d'origine :
- * - reçoit 100 % de la commission ;
- * - reçoit 100 % des GP ;
- * - compte le client pour sa promotion.
+/**
+ * Règles :
+ * - 100 % de la commission pour le commercial d'origine ;
+ * - 100 % des GP pour le commercial d'origine ;
+ * - le client compte pour sa promotion.
  */
-
->>>>>>> origin/main
 function attributeNormalSale({
   originCommercialId,
   amountCommission,
@@ -32,9 +26,7 @@ function attributeNormalSale({
     typeof originCommercialId !== "string" ||
     originCommercialId.trim() === ""
   ) {
-    throw new Error(
-      "Le commercial d'origine est obligatoire."
-    );
+    throw new Error("Le commercial d'origine est obligatoire.");
   }
 
   if (
@@ -67,24 +59,17 @@ function attributeNormalSale({
   };
 }
 
-<<<<<<< HEAD
 // ============================================================
 // PHASE 3.2 — VENTE PARTAGÉE
 // ============================================================
 
 /**
- * Règles officielles :
- *
+ * Règles :
  * - deux commerciaux différents ;
- * - commission répartie 50/50 ;
- * - 0 GP pour les deux ;
+ * - commission répartie à 50/50 ;
+ * - zéro GP pour les deux commerciaux ;
  * - aucun client comptabilisé pour la promotion ;
- * - le montant total de commission doit être conservé.
- *
- * Exemple :
- * Commission totale = 20 USD
- * Commercial origine = 10 USD
- * Commercial concluant = 10 USD
+ * - conservation du montant total de commission.
  */
 function attributeSharedSale({
   originCommercialId,
@@ -95,18 +80,14 @@ function attributeSharedSale({
     typeof originCommercialId !== "string" ||
     originCommercialId.trim() === ""
   ) {
-    throw new Error(
-      "Le commercial d'origine est obligatoire."
-    );
+    throw new Error("Le commercial d'origine est obligatoire.");
   }
 
   if (
     typeof concludingCommercialId !== "string" ||
     concludingCommercialId.trim() === ""
   ) {
-    throw new Error(
-      "Le commercial concluant est obligatoire."
-    );
+    throw new Error("Le commercial concluant est obligatoire.");
   }
 
   if (originCommercialId === concludingCommercialId) {
@@ -136,44 +117,28 @@ function attributeSharedSale({
   return {
     originCommercialId,
     concludingCommercialId,
-
     commissionShare: 50,
-
     originCommissionAmount,
     concludingCommissionAmount,
-
     originGpAttributed: 0,
     concludingGpAttributed: 0,
-
     originCountsForPromotion: false,
     concludingCountsForPromotion: false,
   };
 }
 
 // ============================================================
-// EXPORTS
-// ============================================================
-
-module.exports = {
-  attributeNormalSale,
-  attributeSharedSale,
-  attributeAdditionalServiceSale,
-};// ============================================================
 // PHASE 3.3 — SERVICE SUPPLÉMENTAIRE VENDU PAR UN AUTRE
 // COMMERCIAL
 // ============================================================
 
 /**
- * Règles officielles :
- *
- * Le client reste définitivement rattaché au commercial d'origine.
- *
- * Lorsqu'un autre commercial vend un service supplémentaire :
- * - commission 50/50 entre origine et concluant ;
- * - 0 GP pour les deux ;
- * - aucun nouveau client pour le commercial concluant ;
- * - le client reste rattaché à l'origine ;
- * - la décision doit pouvoir être justifiée par le secrétariat.
+ * Règles :
+ * - le client reste rattaché au commercial d'origine ;
+ * - commission répartie à 50/50 ;
+ * - zéro GP pour les deux commerciaux ;
+ * - aucun nouveau client comptabilisé pour la promotion ;
+ * - justification obligatoire.
  */
 function attributeAdditionalServiceSale({
   originCommercialId,
@@ -185,18 +150,14 @@ function attributeAdditionalServiceSale({
     typeof originCommercialId !== "string" ||
     originCommercialId.trim() === ""
   ) {
-    throw new Error(
-      "Le commercial d'origine est obligatoire."
-    );
+    throw new Error("Le commercial d'origine est obligatoire.");
   }
 
   if (
     typeof concludingCommercialId !== "string" ||
     concludingCommercialId.trim() === ""
   ) {
-    throw new Error(
-      "Le commercial concluant est obligatoire."
-    );
+    throw new Error("Le commercial concluant est obligatoire.");
   }
 
   if (originCommercialId === concludingCommercialId) {
@@ -235,23 +196,23 @@ function attributeAdditionalServiceSale({
   return {
     originCommercialId,
     concludingCommercialId,
-
     commissionShare: 50,
-
     originCommissionAmount,
     concludingCommissionAmount,
-
     originGpAttributed: 0,
     concludingGpAttributed: 0,
-
     originCountsForPromotion: false,
     concludingCountsForPromotion: false,
-
     justification: justification.trim(),
   };
 }
-=======
+
+// ============================================================
+// EXPORTS
+// ============================================================
+
 module.exports = {
   attributeNormalSale,
+  attributeSharedSale,
+  attributeAdditionalServiceSale,
 };
->>>>>>> origin/main
